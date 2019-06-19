@@ -18,6 +18,7 @@
 	  서버사이드에서 동작하는 태그의 형태.
 	  커스텀태그의 사용 : &lt;prefix:tagname 속성들... &gt;
 	 오리지널 작업
+	 클론 수정
 <%-- 	  <jsp:forward page="/05/sessionDesc.jsp" /> --%>
 <%-- 	  <jsp:include page="/05/sessionDesc.jsp" /> --%>
 	  <jsp:useBean id="albaVO" class="kr.or.ddit.vo.AlbaVO" scope="request"></jsp:useBean>
