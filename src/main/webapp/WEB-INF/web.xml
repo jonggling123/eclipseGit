@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+  <display-name>webStudy02_maven_m</display-name>
+  <welcome-file-list>
+    <welcome-file>index.do</welcome-file>
+  </welcome-file-list>
+  <context-param>
+    <param-name>copyright</param-name>
+    <param-value>company207</param-value>
+  </context-param>
+  
+  
+  <listener>
+  	<listener-class>kr.or.ddit.listener.CustomServletContextListener</listener-class>	
+  </listener>
+  
+  
+  <filter>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <filter-class>kr.or.ddit.filter.CharacterEncodingFilter</filter-class>
+    <init-param>
+      <param-name>encoding</param-name>
+      <param-value>UTF-8</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter>
+    <filter-name>FileUploadCheckFilter</filter-name>
+    <filter-class>kr.or.ddit.filter.FileUploadCheckFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>FileUploadCheckFilter</filter-name>
+    <url-pattern>*.do</url-pattern>
+  </filter-mapping>
+  
+  
+  
+  <servlet>
+    <servlet-name>FrontControllerServlet</servlet-name>
+    <servlet-class>kr.or.ddit.mvc.FrontControllerServlet</servlet-class>
+    <init-param>
+      <param-name>basePackages</param-name>
+      <param-value>kr.or.ddit board</param-value>
+    </init-param>
+    <init-param>
+      <param-name>prefix</param-name>
+      <param-value>/WEB-INF/views/</param-value>
+    </init-param>
+    <init-param>
+      <param-name>suffix</param-name>
+      <param-value>.jsp</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>FrontControllerServlet</servlet-name>
+    <url-pattern>*.do</url-pattern>
+  </servlet-mapping>
+  <session-config>
+    <session-timeout>30</session-timeout>
+  </session-config>
+  <error-page>
+    <exception-type>java.lang.ArithmeticException</exception-type>
+    <location>/errors/arithmeticError.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>500</error-code>
+    <location>/errors/error500.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>400</error-code>
+    <location>/errors/error400.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>404</error-code>
+    <location>/errors/error404.jsp</location>
+  </error-page>
+  <error-page>
+    <error-code>403</error-code>
+    <location>/errors/error403.jsp</location>
+  </error-page>
+</web-app>

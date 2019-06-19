@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.board.dao.IBoardDAO">
+	<sql id="searchFrag">
+		<where>
+           <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(searchWord)">
+	           	<choose>
+	           		<when test='"bo_title".equals(searchType)'>
+	           			${searchType} LIKE '%'||#{searchWord}||'%'
+	           		</when>
+	           		<when test='"bo_writer".equals(searchType)'>
+	           			${searchType} LIKE '%'||#{searchWord}||'%'
+	           		</when>
+	           		<when test='"bo_content".equals(searchType)'>
+	           			${searchType} LIKE '%'||#{searchWord}||'%'
+	           		</when>
+	           		<when test='"all".equals(searchType)'>
+	           			BO_TITLE LIKE '%'||#{searchWord}||'%' OR
+	           			BO_WRITER LIKE '%'||#{searchWord}||'%' OR
+	           			BO_CONTENT LIKE '%'||#{searchWord}||'%'
+	           		</when>
+	           	</choose>
+           </if>
+       </where>
+	</sql>
+	
+	<select id="selectBoardCount" resultType="long">
+		SELECT COUNT(BO_NO)
+		FROM BOARD
+		<include refid="searchFrag" />
+	</select>
+	<select id="selectBoardList" parameterType="PagingVO" resultType="BoardVO">
+		 SELECT B.*
+		 FROM(
+		    SELECT ROWNUM RNUM, A.*
+            FROM
+            (SELECT                                                 
+                BO_NO,    	BO_TITLE,    BO_WRITER,
+			    BO_PASS,    BO_DATE,     BO_CONTENT,
+			    CODE_ID,    BO_HIT,      BO_REPORT,
+			    BO_LIKE,    BO_HATE,     BO_IP,
+			    BO_MAIL,    BO_PARENT
+            FROM BOARD
+            <include refid="searchFrag" />
+            ORDER BY ROWID DESC
+            ) A
+		 ) B
+	     <![CDATA[
+	     WHERE RNUM >= #{startRow} AND RNUM <= #{endRow}         
+		]]>
+	</select>
+	<resultMap type="BoardVO" id="boardMap" autoMapping="true">
+		<id property="bo_no" column="BO_NO"/>
+		<collection property="replyList" ofType="ReplyVO" autoMapping="true"></collection>
+	</resultMap>
+	<select id="selectBoard" parameterType="int" resultMap="boardMap">
+		SELECT B.*, d.*
+		 FROM(
+		    SELECT ROWNUM RNUM, A.*
+            FROM
+            (SELECT                                                 
+                REP_NO,    BO_NO,    REP_WRITER,
+    			REP_PASS,    REP_IP,    REP_CONTENT,    REP_DATE
+            FROM REPLYBOARD
+            ORDER BY ROWID DESC
+            ) A
+		 ) B
+         right outer join board d
+         on(b.bo_no=d.bo_no)
+         WHERE D.BO_NO = #{bo_no}
+<!--          <![CDATA[ -->
+<!--          AND RNUM BETWEEN #{startRow} AND #{endRow} -->
+<!--          ]]> -->
+	</select>
+	
+	<update id="incrementHit" parameterType="int">
+		UPDATE BOARD
+		SET BO_HIT = BO_HIT + 1
+		WHERE BO_NO = #{bo_no}
+	</update>
+</mapper>

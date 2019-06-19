@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.alba.dao.IAlbaDAO">
+	<sql id="albaColumns">
+		AL_ID,		    AL_NAME,		    AL_AGE,		    AL_ADDRESS,
+	    AL_HP,		    AL_SPEC,		    AL_DESC,		GR_CODE,
+	    AL_CAREER,		AL_GEN,		    	AL_BTYPE,		AL_MAIL
+	</sql>
+	<insert id="insertAlba" parameterType="AlbaVO">
+		<selectKey resultType="string" keyProperty="al_id" order="BEFORE">
+			SELECT 'ALBA_'||LPAD(NVL(TO_NUMBER(SUBSTR(MAX(AL_ID), 6)), 0)+1, 3, '0')
+			FROM ALBA
+		</selectKey>
+		INSERT ALL 
+			INTO ALBA (
+			    <include refid="albaColumns" />
+			) VALUES (
+			 	#{al_id,jdbcType=VARCHAR},		    #{al_name,jdbcType=VARCHAR},		    #{al_age,jdbcType=NUMERIC},		    #{al_address,jdbcType=VARCHAR},
+			    #{al_hp,jdbcType=VARCHAR},		    #{al_spec,jdbcType=VARCHAR},		    #{al_desc,jdbcType=VARCHAR},		    #{gr_code,jdbcType=VARCHAR},
+			    #{al_career,jdbcType=VARCHAR},		    #{al_gen,jdbcType=CHAR},		    #{al_btype,jdbcType=VARCHAR},		    #{al_mail,jdbcType=VARCHAR}
+			)
+		<if test="lic_codes!=null and lic_codes.length gt 0">	
+			<foreach collection="lic_codes" item="lic_code">
+				INTO LIC_ALBA (AL_ID, LIC_CODE)	VALUES( #{al_id}, #{lic_code})
+			</foreach> 
+		</if>
+		SELECT * FROM DUAL
+	</insert>
+	<resultMap type="AlbaVO" id="albaMap" autoMapping="true">
+		<id property="al_id" column="AL_ID"/>
+		<collection property="licenses" ofType="string">
+			<result property="" column="LIC_CODE"/>
+		</collection>
+		<collection property="license_names" ofType="string">
+			<result property="" column="LIC_NAME"/>
+		</collection>
+	</resultMap>
+	<select id="selectAlba" parameterType="string" resultMap="albaMap">
+		SELECT
+			A.AL_ID,		    AL_NAME,		    AL_AGE,		    AL_ADDRESS,
+		    AL_HP,		    AL_SPEC,		    AL_DESC,		A.GR_CODE,
+		    AL_CAREER,		AL_GEN,		    	AL_BTYPE,		AL_MAIL
+		    , GR_NAME
+		    , C.LIC_CODE, LIC_NAME
+		FROM ALBA A INNER JOIN GRADE B ON (A.GR_CODE = B.GR_CODE)
+					LEFT OUTER JOIN LIC_ALBA C ON (A.AL_ID = C.AL_ID)
+					LEFT OUTER JOIN LICENSE D ON (C.LIC_CODE = D.LIC_CODE)
+		WHERE A.AL_ID = #{al_id}    
+	</select>
+	<select id="selectAlbaList" resultType="AlbaVO">
+		SELECT
+			<include refid="albaColumns" />
+		FROM ALBA
+		ORDER BY AL_ID		
+	</select>
+	<update id="updateAlba" parameterType="AlbaVO">
+		UPDATE alba
+		SET
+		    AL_NAME	=	#{al_name,jdbcType=VARCHAR},
+		    AL_AGE	=	#{al_age,jdbcType=NUMERIC},
+		    AL_ADDRESS	=	#{al_address,jdbcType=VARCHAR},
+		    AL_HP	=	#{al_hp,jdbcType=VARCHAR},
+		    AL_SPEC	=	#{al_spec,jdbcType=VARCHAR},
+		    AL_DESC	=	#{al_desc,jdbcType=VARCHAR},
+		    GR_CODE = #{gr_code,jdbcType=VARCHAR},
+		    AL_CAREER	=	#{al_career,jdbcType=VARCHAR},
+		    AL_GEN	=	#{al_gen,jdbcType=CHAR},
+		    AL_BTYPE	=	#{al_btype,jdbcType=VARCHAR},
+		    AL_MAIL	=	#{al_mail,jdbcType=VARCHAR}
+		WHERE  AL_ID	=	#{al_id,jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="insertLicenses" parameterType="AlbaVO">
+		<if test="lic_codes!=null and lic_codes.length gt 0">
+			INSERT ALL
+			<foreach collection="lic_codes" item="lic_code">
+				INTO LIC_ALBA (AL_ID, LIC_CODE)	VALUES( #{al_id}, #{lic_code})
+			</foreach> 
+			SELECT * FROM DUAL
+		</if>
+	
+	</insert>
+	<delete id="deleteLicenses" parameterType="AlbaVO">
+			DELETE FROM LIC_ALBA
+			WHERE AL_ID = #{al_id}
+	</delete>	
+	<delete id="deleteAlba" parameterType="string">
+		DELETE FROM ALBA 
+		WHERE AL_ID = #{al_id}
+	</delete>
+</mapper>
+
+
+
+
+
+
+
+

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="board.dao.IBoardDAO">
+	<select id="selectBoardCount" resultType="long">
+		SELECT COUNT(BO_NO)
+		FROM BOARD
+	</select>
+	<select id="selectBoardList" parameterType="PagingVO" resultType="BoardVO">
+		SELECT D.*
+		FROM
+		(SELECT ROWNUM RNUM , C.*
+		FROM
+			(SELECT 
+			    A.bo_no,    A.bo_title,    A.bo_writer,    A.bo_date,
+			    A.bo_content,    B.CODE_NAME,    A.bo_hit,    A.bo_report,
+			    A.bo_parent,    A.bo_like,    A.bo_hate,    A.bo_ip,
+			    A.bo_mail,    A.bo_pass
+			FROM board A
+			INNER JOIN SIMPLECODE B ON(A.CODE_ID = B.CODE_ID)
+			ORDER BY A.ROWID DESC) C
+		) D
+		WHERE RNUM BETWEEN #{startRow} AND #{endRow}
+	</select>
+</mapper>
