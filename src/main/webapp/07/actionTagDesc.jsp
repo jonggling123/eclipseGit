@@ -17,6 +17,7 @@
 	: JSP 스펙에 따라 기본 제공되는 커스텀 태그의 일종으로
 	  서버사이드에서 동작하는 태그의 형태.
 	  커스텀태그의 사용 : &lt;prefix:tagname 속성들... &gt;
+	 오리지널 작업
 <%-- 	  <jsp:forward page="/05/sessionDesc.jsp" /> --%>
 <%-- 	  <jsp:include page="/05/sessionDesc.jsp" /> --%>
 	  <jsp:useBean id="albaVO" class="kr.or.ddit.vo.AlbaVO" scope="request"></jsp:useBean>
